@@ -1,0 +1,159 @@
+---
+title: 'Méthodologie d’analyse et de détermination des scores '
+author: DIARRASSOUBA.R, MBENGUE.I, DJENDE POY.J, KOUOMEGNE TCHIENGUING.B
+date: "2023-05-21"
+output:
+  pdf_document:
+    
+    toc: yes
+    toc_depth: 6
+    number_sections: yes
+  html_document:
+    toc: yes
+    toc_depth: 6
+    number_sections: yes
+---
+
+\newpage
+
+# INTRODUCTION
+
+## Objectif :
+
+La mesure de l'abondance moyenne des espèces (MSA) est un indicateur de l'intégrité de la biodiversité locale. Elle varie de 0 à 1, 1 signifiant que l'assemblage d'espèces est totalement intact ou encore le milieu est bien diversifié et 0 signifiant que toutes les espèces originales ont disparu (extinction locale) ou milieu non diversifié. La MSA est calculée sur la base de l'abondance des espèces individuelles sous l'influence d'une pression donnée, comparée à leur abondance dans une situation non perturbée (situation naturelle/référence).    
+Pour analyser la MSA , on se réfèrent aux cinq grandes pressions directes responsables de la perte de la biodiversité  à savoir : le changement d’usage des sols (ou utilisation des terres) et de la mer, l’exploitation directe des organismes vivants, le changement climatique, les pollutions, et la propagation d’espèces exotiques envahissantes. L’analyse de la MSA à ces différents niveaux nous permet d’aboutir à une MSA globale.
+Notre objectif est d’appliquer   la méthode  "Top/Down"  qui consiste à débuter notre analyse au niveau national puis à l’étendre au niveau secteur. Pour cela  nous allons en premier lieu aborder le problème en commençant par une vue d’ensemble globale du système grâce au calcul de la MSA de la France puis en second lieu nous allons le décomposer  progressivement en sous-systèmes plus détaillés par le calcul de la MSA par région et par entreprises puis par secteur.
+Nous avons à notre disposition plusieurs données qui nous permettent ce calcul de la MSA notamment les données globio qui nous fournit des données géolocalisées pour le calcul de la MSA et La base Corine Land Cover France fournie par l’AEE  donnant des informations géolocalisées sur l’occupation des terres en France.
+
+## Idée principale :
+
+Notre approche est basée sur celle du GLOBIO (Globio Biodiversity Model) développé par le PBL Netherlands Environmental Assessment. Elle calcule la MSA par facteur de pression. Les pressions sont : utilisation des terres, changement climatique, dépôts d'azote, perturbations dues aux infrastructures, fragmentation de l'habitat en raison de l'utilisation des terres et des infrastructures, et empiètement humain. En effet, une MSA est calculée pour chaque pression. Dans notre travail, on s'intéresse à la MSA Land use ou la MSA d’occupation des terres.
+L’idée générale dans notre démarche est de calculer la MSA en déterminant d’abord la part de chaque type d’occupation du sol afin de le pondérer par le score de MSA que nous propose le Globio Model.
+Pour calculer la MSA par région par exemple, on a décidé de regarder la composition du sol dans chaque région de la France selon chaque type de sol puis calculer la part de chacun et le pondérer score que la méthode globio nous propose (la méthode globio nous propose des scores globaux c’est  à dire pour chaque composition du sol la méthode globio donne la MSA correspondante). 
+
+# Méthodologie générale de calcul de la MSA Land Use avec la base Corine Land Cover :
+
+Cette étude se consacre au calcul de la MSA d’occupation des terres (MSA Land use). 
+Différents types d’occupation des sols sont pris en compte par le modèle GLOBIO. Pour chaque type d’occupation, le modèle globio assigne une valeur de MSA particulière. Par exemple, pour les espaces forestiers, la MSA associée est de 1; ce qui  dénote une conservation maximale de la biodiversité pour ce type d’occupation des sols. Par contre pour les zones urbaines, la MSA associée est de 0.05 révélant une perte de biodiversité très importante pour ce type d’occupation des sols.   
+
+
+**Figure 1 : Représentation schématique entre les pressions et les impacts en MSA**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure1.png")
+
+```
+
+**Source :  Globio Model, Technical description of version 3.5**
+
+Ainsi donc, le calcul de la MSA land use requiert tout d’abord la composition des sols dans l’espace considéré qui peut être un pays, une région, ou même une commune.
+Une fois cette composition connue (proportion des sols par type d’occupation) pour le pays , la région ou la commune considérée, la MSA Land use s’obtient en faisant la moyenne des MSA par type de sol pondérées par les proportions des sols par type d’occupation. 
+La base Corine Land Cover de la France nous donne la composition du type de sol sur toute l'étendue de la France. Cependant la nomenclature de cette base est différente de celle du Globio Model ce qui fait qu’un rapprochement est nécessaire afin de les ramener à la même nomenclature (nomenclature_1 qui est celle de la base Corine Land Cover). Pour effectuer ce rapprochement de la nomenclature Blobio Model a celle de la base Corine Land Cover, on calcul la moyenne des MSA des différents types de d’occupation du Globio tout en faisant l'hypothèse que les types d’occupation ont le même poids. Ainsi la MSA globale est une moyenne pondérée des MSA de chaque type d’occupation (nomenclature CLC) par leurs pourcentages.
+
+**Tableau 2 : Liaison entre la nomenclature CLC (niv1) et classes GLOBIO**
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure2.png")
+```
+
+**Source : Auteurs, sur hypothèses**
+
+Suite au regroupement des types d’occupation de Globio on obtient le tableau suivant :  
+
+
+**Tableau 3 : MSA Land Use pour chaque type d’occupation des terres (Classes CLC)**
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure3.png")
+```
+
+**Source : Calculs des auteurs**
+
+Une fois la MSA par type d’occupation de sol selon la nomenclature_1 de la base Corine Land Cover obtenue on peut calculer la MSA de la France, par région et par secteur aussi; en calculant le pourcentage de chaque type d’occupation de sol puis le pondérer par le score de MSA obtenu par rapprochement.
+
+## Calcul de la MSA de la France:
+Dans le calcul de la MSA de la France, nous avons utilisé la base CLC puis calculer la proportion de chaque type de sol sur le territoire français. Ainsi on obtient le graphique suivant :  
+
+
+**Graphique 1 : Proportion par type de sol en France**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure4.jpeg")
+```
+             **Source : Auteur**
+         
+                    
+A travers ce graphique on voit que le territoire_agricole occupe 51% de la surface totale du térritoire  français.
+Ces proportions sont pondérées à la MSA obtenue par rapprochement.Ce qui donne un proxy de la MSA de la France de **0.51**.
+
+## Calcul de la MSA par région :
+
+Pour le calcul de la MSA par région, nous avons effectué une jointure spatiale dans  QGIS, de la base CLC  qui donne l’information sur la composition du sol et la base CLC_commune qui donne la géolocalisation des communes, département et région.
+Ainsi on a la composition du type de sol dans chaque région, ce qui nous permet de calculer leur proportion par région. Ces proportions sont pondérées par le score MSA afin de calculer la MSA par région.
+Ce qui donne le graphique suivant :
+
+**Graphique:Diagramme à barre horizontale du MSA par région**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure5.jpeg")
+```
+
+**Source : Auteur (Sur Python )**
+
+**Graphique . : Diagramme à barre verticale du MSA par région**
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure6.jpeg")
+```
+
+Ce graphique nous montre que les régions les moins diversifiées de la France sont : le Picardie, la Champagne-Ardenne et l’Ile de France.  
+
+
+## Calcul de la MSA  par secteur :
+
+
+Dans le même approche, nous allons calculer la MSA par secteur en utilisant 1000 GE obtenues avec la base Diane qui contient l’ensemble des informations financières de ces entreprises.
+Afin d’effectuer la jointure de la base Diane avec la base CLC, on a besoin de l’ensemble des établissements des entreprises choisies pour les localiser, ce qui nous permettra de connaître la composition de l’environnement dans  lequel elles sont localisées. Pour trouver les établissements, nous avons fusionné la base Diane à la base StockEtablissementActif_utf8_geo qui donne les établissements avec leur SIREN et SIRET. Une fois les établissements trouvés,la nouvelle base est importée dans QGIS, ou on a créé une zone tampon d’un rayon de 1km autour de chaque établissement. Après cela on effectue une jointure spatiale avec la base CLC pour trouver la composition du sol de chaque entreprise dans la zone tampon. Ce qui donne le graphique suivant.
+
+**Carte 1 :  Jointure spatiale  de la localisation des établissement et la base CLC.**
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure7.PNG")
+```
+
+**Source : Auteur (Sous QGIS)**
+ A partir de là, on peut calculer la proportion de 	chaque type de sol dans la zone tampon pour la pondérer avec le score de la MSA.
+
+**Graphique: Exemple de proportion pour deux type de secteurs**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure8.jpeg")
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure9.jpeg")
+```
+
+**Source : Auteurs (cf code Python)**
+
+A travers ces deux graphiques on peut voir que le secteur EDITION a une % elevé en territoire_agricole ce qui peut entraîner une MSA faible car le score de ce type est faible et que le secteur SSS&SCG aura une MSA faible car est entouré de 100% de territoire artificialisé.
+ 
+Ainsi on a la MSA pour quelques secteurs (dans lesquels se trouve les 1000 GE utilisées pour notre étude).
+
+**Graphique. : MSA par secteur**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure10.jpeg")
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width='70%', out.height='70%', fig.align='center'}
+knitr::include_graphics("images/figure11.jpeg")
+```
+
+**Source : Auteur (cf code Python)**
+
+# Conclusion
+
+En somme, nous avons mis en place une métrique (MSA) permettant d’évaluer l’abondance de la biodiversité en France.Pour la mise en place de cette MSA nous avons appliqué la méthode "Top/Down" grace à laquelle notre travail s'est déroulé en 3 étapes: le calcul de la MSA de la France, le calcul de la MSA par région de la France et le calcul de la MSA par secteur de la France.
+Le calcul de la MSA  à été possible grace à de diverses bases données notamment la base de données Corine Land Cover France , la base de données DIANE, la Base de données SIREN et les données GLOBIO.
+Grace aux différents résultats obtenus ont remarque que la MSA de FRANCE est de **0.51**, les régions les plus diversifiés de la France sont la Corse et la Brétagne et les régions les moins diversifiées de la France sont : le Picardie, la Champagne-Ardenne et l’Ile de France.   
